@@ -67,7 +67,7 @@
    * @return true: 输出LED成功. false: 输出LED失败.
   */
   bool setOutLed(eLedMode_t switching);
-  
+
   /**
    * @fn setOutMode
    * @brief 设置out脚输出模式
@@ -95,7 +95,7 @@
    * @param farthest: 最长距离, 单位: cm
    * @return true: 设置检测范围成功. false: 设置检测范围失败.
   */
-  bool setDetect范围(uint16_t closest,uint16_t farthest); 
+  bool setDetect范围(uint16_t closest,uint16_t farthest);
 
   /**
    * @fn enableDistanceDoor
@@ -106,7 +106,7 @@
    * @param doorData: 需要一个uint8t类型的数组，参数0和1分别表示禁用和启用距离门
    * @return true: 操作成功. false: 操作失败.
   */
-  bool enableDistanceDoor(eDistanceDoorType_t doorType, uint8_t *doorData); 
+  bool enableDistanceDoor(eDistanceDoorType_t doorType, uint8_t *doorData);
 
   /**
    * @fn factoryReset
@@ -198,7 +198,7 @@
    * @n        energy  : 存在目标的能量, 范围:0-99.
   */
   sExistTarget_t getExistTargetInfo(void);
-  
+
   /**
    * @fn getMoveTargetInfo
    * @brief 获取移动目标的信息

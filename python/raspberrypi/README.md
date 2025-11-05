@@ -77,7 +77,7 @@ Download the library file before use, paste it into the custom directory for Ras
       @param delay_time: delay time.range:0-65535s
       @param cont_time : continuous time.range:15-65535s
     '''
-    
+
   def set_detect_range(self, closet_distance, farthest_distance):
     '''!
       @brief set detect range,unit:cm,range:0-1100cm
@@ -85,7 +85,7 @@ Download the library file before use, paste it into the custom directory for Ras
       @param farthest_distance : farthest distance
       @return True or False
     '''
-    
+
 
   def enable_distance_door(self, door_type, door_data):
     '''!
@@ -94,9 +94,9 @@ Download the library file before use, paste it into the custom directory for Ras
       @n              MOVE_DISTANCE_DOOR:move distance door
       @n              EXIST_DISTANCE_DOOR:exist distance door
       @param door_data：The distance gate status data is an array. The length of
-      @n                the array depends on the resolution mode. In the 80cm 
+      @n                the array depends on the resolution mode. In the 80cm
       @n                mode, 15 gates can be set, and in the 20cm mode, 25 gates
-      @n                can be set. Each gate corresponds to the index of 
+      @n                can be set. Each gate corresponds to the index of
       @n                the array, starting from 0.
       @return True or False
     '''
@@ -136,8 +136,8 @@ Download the library file before use, paste it into the custom directory for Ras
       @param door_type: distance door type
       @n              MOVE_DISTANCE_DOOR:move distance door
       @n              EXIST_DISTANCE_DOOR:exist distance door
-      @param threshold: Threshold, this is an array. The length of the array depends 
-      @n                on the resolution mode. In the 80cm mode, 15 gates can be set, 
+      @param threshold: Threshold, this is an array. The length of the array depends
+      @n                on the resolution mode. In the 80cm mode, 15 gates can be set,
       @n                and in the 20cm mode, 25 gates can be set
       @return True or False
     '''

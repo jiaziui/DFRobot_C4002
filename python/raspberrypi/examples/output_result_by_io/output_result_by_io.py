@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*
 '''!
-  @file output_result_by_io.py
-  @brief This example shows how to restore factory Settings.
-  @copyright Copyright (c) 2025 DFRobot Co.Ltd (http://www.dfrobot.com)
-  @license The MIT License (MIT)
-  @author [JiaLi](zhixin.liu@dfrobot.com)
-  @version V1.0
-  @date 2025-11-04
-  @url https://github.com/cdjq/DFRobot_C4002
+@file output_result_by_io.py
+@brief This example shows how to restore factory Settings.
+@copyright Copyright (c) 2025 DFRobot Co.Ltd (http://www.dfrobot.com)
+@license The MIT License (MIT)
+@author [JiaLi](zhixin.liu@dfrobot.com)
+@version V1.0
+@date 2025-11-04
+@url https://github.com/cdjq/DFRobot_C4002
 '''
+
 import time
 import serial
 import RPi.GPIO as GPIO
 import sys
+
 sys.path.append("../../")
 
 from DFRobot_C4002 import *
@@ -20,12 +22,13 @@ from DFRobot_C4002 import *
 c4002 = DFRobot_C4002(115200)
 
 # output pin,BCM coding
-out_pin = 18 
+out_pin = 18
 ## Set the input pins of the Raspberry PI，BCM coding
 ## Connect them to the C4002 sensor out pins
 
+
 def setup():
-  while(c4002.begin(out_pin) != True):
+  while c4002.begin(out_pin) != True:
     print("C4002 begin faild!")
     time.sleep(1)
 
@@ -61,7 +64,7 @@ def loop():
   target_state = c4002.get_out_target_state()
 
   # Print the target state
-  print("Target state: ", end = "")
+  print("Target state: ", end="")
   if target_state == c4002.NO_BODY:
     print("No body!")
   elif target_state == c4002.MOVE:
@@ -78,6 +81,7 @@ def loop():
     print("Pin error! please check the connection or pin number!")
 
   time.sleep(0.5)
+
 
 if __name__ == "__main__":
   setup()

@@ -21,19 +21,20 @@
 
 #if defined(ESP8266) || defined(ARDUINO_AVR_UNO)
 SoftwareSerial mySerial(4, 5);
-DFRobot_C4002 c4002(&mySerial, 115200);
+DFRobot_C4002  c4002(&mySerial, 115200);
 #elif defined(ESP32)
-DFRobot_C4002 c4002(&Serial1,115200,/*D2*/D2,/*D3*/D3);
+DFRobot_C4002 c4002(&Serial1, 115200, /*D2*/ D2, /*D3*/ D3);
 #else
 DFRobot_C4002 c4002(&Serial1, 115200);
 #endif
 
-void setup() {
+void setup()
+{
 
   Serial.begin(115200);
 
   // Initialize the C4002 sensor
-  while(c4002.begin() != true){
+  while (c4002.begin() != true) {
     Serial.println("C4002 begin failed!");
     delay(1000);
   }
@@ -42,28 +43,28 @@ void setup() {
   // Query the versions of software and hardware
   delay(50);
   String softwareVersion = "";
-  softwareVersion = c4002.getVersioninfo(SOFTWARE_VERSION);
+  softwareVersion        = c4002.getVersioninfo(SOFTWARE_VERSION);
   Serial.print("Software version:");
   Serial.println(softwareVersion);
   delay(10);
   String hardwareVersion = "";
-  hardwareVersion = c4002.getVersioninfo(HARDWARE_VERSION);
+  hardwareVersion        = c4002.getVersioninfo(HARDWARE_VERSION);
   Serial.print("Hardware version:");
   Serial.println(hardwareVersion);
   delay(2000);
 
   // Reset the sensor to factory default
   Seiral.println("Restore factory settings...");
-  if(c4002.factoryReset()){
+  if (c4002.factoryReset()) {
     Serial.println("Factory reset succeed!");
     Serial.println("After restoring the factory Settings, a restart is required!");
-  }else{
+  } else {
     Serial.println("Factory reset failed!");
-  } 
-  
+  }
 }
 
-void loop() {
-  
+void loop()
+{
+
   delay(100);
 }

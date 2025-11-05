@@ -76,7 +76,7 @@
       @param delay_time: 延时时间.range:0-65535s
       @param cont_time : 持续采样校准时间.range:15-65535s
     '''
-    
+
   def set_detect_range(self, closet_distance, farthest_distance):
     '''!
       @brief 设置检测范围,单位:cm,范围:0-1100cm
@@ -84,7 +84,7 @@
       @param farthest_distance : 最远距离
       @return True or False
     '''
-    
+
 
   def enable_distance_door(self, door_type, door_data):
     '''!

@@ -16,63 +16,63 @@
 
 #if defined(ESP8266) || defined(ARDUINO_AVR_UNO)
 #include <SoftwareSerial.h>
-#else 
+#else
 #include <HardwareSerial.h>
 #endif
 
 //#define ENABLE_DEBUG
 #ifdef ENABLE_DEBUG
-#define DBG(...) \
-  {  \
-  Serial.print("["); \
-  Serial.print(__FUNCTION__); \
-  Serial.print("(): "); \
-  Serial.print(__LINE__); \
-  Serial.print(" ] ");  \
-  Serial.println(__VA_ARGS__); \
+#define DBG(...)                 \
+  {                              \
+    Serial.print("[");           \
+    Serial.print(__FUNCTION__);  \
+    Serial.print("(): ");        \
+    Serial.print(__LINE__);      \
+    Serial.print(" ] ");         \
+    Serial.println(__VA_ARGS__); \
   }
 #else
 #define DBG(...)
 #endif
 
-#define TIME_OUT                         0x64             ///< time out
-#define FRAME_HEADER1                    0xFA             ///< frame header1
-#define FRAME_HEADER2                    0xF5             ///< frame header2
-#define FRAME_HEADER3                    0xAA             ///< frame header3
-#define FRAME_HEADER4                    0xA5             ///< frame header4
+#define TIME_OUT      0x64    ///< time out
+#define FRAME_HEADER1 0xFA    ///< frame header1
+#define FRAME_HEADER2 0xF5    ///< frame header2
+#define FRAME_HEADER3 0xAA    ///< frame header3
+#define FRAME_HEADER4 0xA5    ///< frame header4
 
-#define FRAME_TYPE_WRITE_REQUSET         0x00             ///< write request frame type
-#define FRAME_TYPE_READ_REQUSET          0x01             ///< read request frame type
-#define FRAME_TYPE_WRITE_RESPOND         0x02             ///< write respond frame type
-#define FRAME_TYPE_READ_RESPOND          0x03             ///< read respond frame type
-#define FRAME_TYPE_NOTIFICATION          0x04             ///< notification frame type
-#define FRAME_ERROR                      0xFF             ///< error frame type
+#define FRAME_TYPE_WRITE_REQUSET 0x00    ///< write request frame type
+#define FRAME_TYPE_READ_REQUSET  0x01    ///< read request frame type
+#define FRAME_TYPE_WRITE_RESPOND 0x02    ///< write respond frame type
+#define FRAME_TYPE_READ_RESPOND  0x03    ///< read respond frame type
+#define FRAME_TYPE_NOTIFICATION  0x04    ///< notification frame type
+#define FRAME_ERROR              0xFF    ///< error frame type
 
-#define CMD_SET_LED_MODE                 0xA1             ///< set led mode
-#define CMD_CONFIG_OUT_MODE              0xA0             ///< set output mode
-#define CMD_ENVIRNMENT_CALIBRATION       0x60             ///< environment calibration
-#define CMD_RESTART                      0x00             ///< restart command
-#define CMD_SET_DETECT_RANGE             0x86             ///< set detect sensitivity
-#define CMD_FACTORY_RESET                0x02             ///< factory reset command
-#define CMD_SET_REPORT_PERIOD            0x83             ///< set report period
-#define CMD_SET_LIGHT_THRESHOLD          0x88             ///< set light threshold
-#define CMD_SET_DISTANCE_DOOR            0x62             ///< set distance door
-#define CMD_GET_VERSION                  0x82             ///< get version command
-#define CMD_GET_AND_SET_RESOLUTION_MODE  0x66             ///< get resolution mode command
-#define CMD_SET_DISTANCE_DOOR_THRESHOLD  0x63             ///< set distance door threshold
-#define CMD_SET_BAUDRATE                 0x21             ///< set baudrate command
+#define CMD_SET_LED_MODE                0xA1    ///< set led mode
+#define CMD_CONFIG_OUT_MODE             0xA0    ///< set output mode
+#define CMD_ENVIRNMENT_CALIBRATION      0x60    ///< environment calibration
+#define CMD_RESTART                     0x00    ///< restart command
+#define CMD_SET_DETECT_RANGE            0x86    ///< set detect sensitivity
+#define CMD_FACTORY_RESET               0x02    ///< factory reset command
+#define CMD_SET_REPORT_PERIOD           0x83    ///< set report period
+#define CMD_SET_LIGHT_THRESHOLD         0x88    ///< set light threshold
+#define CMD_SET_DISTANCE_DOOR           0x62    ///< set distance door
+#define CMD_GET_VERSION                 0x82    ///< get version command
+#define CMD_GET_AND_SET_RESOLUTION_MODE 0x66    ///< get resolution mode command
+#define CMD_SET_DISTANCE_DOOR_THRESHOLD 0x63    ///< set distance door threshold
+#define CMD_SET_BAUDRATE                0x21    ///< set baudrate command
 
-#define NOTE_RESULT_CMD                  0x60             ///< detection result notification command
-#define NOTE_ENVIRNMENT_CALIBRATION_CMD  0x03             ///< environment calibration notification command
+#define NOTE_RESULT_CMD                 0x60    ///< detection result notification command
+#define NOTE_ENVIRNMENT_CALIBRATION_CMD 0x03    ///< environment calibration notification command
 
-#define SOFTWARE_VERSION                 0x01             ///< get software version
-#define HARDWARE_VERSION                 0x00             ///< get hardware version
+#define SOFTWARE_VERSION 0x01    ///< get software version
+#define HARDWARE_VERSION 0x00    ///< get hardware version
 
 /**
  * @enum eResolutionMode_t
  * @brief Resolution mode
 */
-typedef enum{
+typedef enum {
   eResolution80Cm = 0x00,
   eResolution20Cm = 0x01
 } eResolutionMode_t;
@@ -81,86 +81,86 @@ typedef enum{
  * @enum eDistanceDoorType_t
  * @brief Distance door type
 */
-typedef enum{
-  eMoveDistDoor = 0x00,
+typedef enum {
+  eMoveDistDoor  = 0x00,
   eExistDistDoor = 0x01
-}eDistanceDoorType_t;
+} eDistanceDoorType_t;
 
 /**
  * @enum eResponseCode_t
  * @brief Response code
 */
-typedef enum{
-  eReadAndWriteReq    = 0x00, /*read and write request       */
-  eSucceed            = 0x01,
-  eCmdErr             = 0x02, /* The CMD does not exist      */
-  eAuthenticationErr  = 0x03, /* Authentication error        */
-  eResourcesBusy      = 0x04, /* Resources are busy          */
-  eParamsErr          = 0x05, /* The parameters are illegal  */
-  eDataLenErr         = 0x06, /* Abnormal data length        */
-  eInternalErr        = 0x07  /* internal error              */
-}eResponseCode_t;
+typedef enum {
+  eReadAndWriteReq   = 0x00, /*read and write request       */
+  eSucceed           = 0x01,
+  eCmdErr            = 0x02, /* The CMD does not exist      */
+  eAuthenticationErr = 0x03, /* Authentication error        */
+  eResourcesBusy     = 0x04, /* Resources are busy          */
+  eParamsErr         = 0x05, /* The parameters are illegal  */
+  eDataLenErr        = 0x06, /* Abnormal data length        */
+  eInternalErr       = 0x07  /* internal error              */
+} eResponseCode_t;
 
 /**
  * @enum eOutMode_t
  * @brief Output mode
 */
-typedef enum{
-  eOutMode1     = 0x01, /* Only when motion is detected will a high level be output */
-  eOutMode2     = 0x02, /* A high level is output only when its presence is detected */
-  eOutMode3     = 0x03, /* A high level only appears when movement or presence is detected */
-  eOutModex     = 0xFF  /* reserved                          */
-}eOutMode_t;
+typedef enum {
+  eOutMode1 = 0x01, /* Only when motion is detected will a high level be output */
+  eOutMode2 = 0x02, /* A high level is output only when its presence is detected */
+  eOutMode3 = 0x03, /* A high level only appears when movement or presence is detected */
+  eOutModex = 0xFF  /* reserved                          */
+} eOutMode_t;
 
 /**
  * @enum eMoveDirection_t
  * @brief The direction of the movement
 */
-typedef enum{
+typedef enum {
   eAway = 0,
   eStay = 1,
   eNear = 2
-}eMoveDirection_t;
+} eMoveDirection_t;
 
 /**
  * @enum eTargetState_t
  * @brief The state of the target
 */
-typedef enum{
-  eNobody = 0,
-  eExist = 1,
-  eMove = 2,
-  eMoveOrExist = 3,
-  eMoveOrNobody = 4,
+typedef enum {
+  eNobody        = 0,
+  eExist         = 1,
+  eMove          = 2,
+  eMoveOrExist   = 3,
+  eMoveOrNobody  = 4,
   eExistOrNobody = 5,
-  ePinError = 255
-}eTargetState_t;
+  ePinError      = 255
+} eTargetState_t;
 
 /**
  * @enum eLedMode_t
  * @brief The operation led mode
 */
-typedef enum{
-  eLedOff = 0x00,
-  eLedOn = 0x01,
+typedef enum {
+  eLedOff  = 0x00,
+  eLedOn   = 0x01,
   eLedKeep = 0xFF
-}eLedMode_t;
+} eLedMode_t;
 
 /**
  * @enum eNoteType_t
  * @brief The type of the notification message
 */
 typedef enum {
-  eNoNote = 0x00,
-  eNoteInfoResult = 0x01,
+  eNoNote              = 0x00,
+  eNoteInfoResult      = 0x01,
   eNoteInfoCalibration = 0x02,
-}eNoteType_t;
+} eNoteType_t;
 
 /**
  * @struct sDetectResult_t
  * @brief The detection result
 */
-typedef struct{
+typedef struct {
   uint8_t  targetStatus;
   uint16_t light;
   uint32_t existDistIndex;
@@ -171,80 +171,80 @@ typedef struct{
   int16_t  moveTargetSpeed;
   uint8_t  moveTargetEnery;
   uint8_t  moveTargetDirect;
-}sDetectResult_t;
+} sDetectResult_t;
 
 /**
  * @struct sDataHeader_t
  * @brief The data header of the received package
 */
-typedef struct{
-  uint8_t         cmd;
-  uint8_t         respCode;
-  uint16_t        dataLen;
-}sDataHeader_t;
+typedef struct {
+  uint8_t  cmd;
+  uint8_t  respCode;
+  uint16_t dataLen;
+} sDataHeader_t;
 
 /**
  * @struct sRecvPack_t
  * @brief The received package
 */
 typedef struct {
-  sDataHeader_t  dataHeader;
-  uint8_t        data[50];
-  uint8_t        packType;
+  sDataHeader_t   dataHeader;
+  uint8_t         data[50];
+  uint8_t         packType;
   eResponseCode_t resPonCode;
-}sRecvPack_t;
+} sRecvPack_t;
 
 /**
  * @struct sResData_t
  * @brief The detection result and environment calibration information
 */
-typedef struct{
+typedef struct {
   uint8_t         cmd;
   uint8_t         respCode;
   sDetectResult_t dectResult;
-  uint16_t calibCountdown;
-}sResData_t;
+  uint16_t        calibCountdown;
+} sResData_t;
 
 /**
  * @struct sMoveTarget_t
  * @brief The movement target
 */
-typedef struct{
-  float         distance;
-  uint8_t         energy;
-}sExistTarget_t;
+typedef struct {
+  float   distance;
+  uint8_t energy;
+} sExistTarget_t;
 
 /**
  * @struct sMoveTarget_t
  * @brief The movement target
 */
-typedef struct{
-  float               distance;
-  float               speed;
-  uint8_t             energy;
-  eMoveDirection_t    direction;
-}sMoveTarget_t;
+typedef struct {
+  float            distance;
+  float            speed;
+  uint8_t          energy;
+  eMoveDirection_t direction;
+} sMoveTarget_t;
 
 /**
  *  @struct sRetResult_t
  *  @brief The detection result and environment calibration information
 */
-typedef struct{
-  eNoteType_t         noteType;
-  uint16_t        calibCountdown;
-}sRetResult_t;
+typedef struct {
+  eNoteType_t noteType;
+  uint16_t    calibCountdown;
+} sRetResult_t;
 
-class DFRobot_C4002{
+class DFRobot_C4002 {
 public:
-  #if defined(ESP8266) || defined(ARDUINO_AVR_UNO)
+#if defined(ESP8266) || defined(ARDUINO_AVR_UNO)
   DFRobot_C4002(SoftwareSerial *sSerial, uint32_t baud);
-  #else
+#else
   DFRobot_C4002(HardwareSerial *hSerial, uint32_t baud, uint8_t rxpin = 0, uint8_t txpin = 0);
-  #endif
+#endif
 
   ~DFRobot_C4002() {};
 
-/**
+  /**
  * @fn begin
  * @brief Initialize the serial port and set the output pin
  * @param outPin: The output pin, default is 255, which means no output pin is used.
@@ -270,7 +270,7 @@ public:
    * @return true: Output LED succeeded, false: Output LED failed.
   */
   bool setOutLed(eLedMode_t switching);
-  
+
   /**
    * @fn setOutMode
    * @brief Set the output mode
@@ -289,7 +289,7 @@ public:
    * @param contTime : The calibration time, unit: s
    * @return true: Start calibration succeeded, false: Start calibration failed.
   */
-  void startEnvCalibration(uint16_t delayTime ,uint16_t contTime);
+  void startEnvCalibration(uint16_t delayTime, uint16_t contTime);
 
   /**
    * @fn setDetectRange
@@ -298,7 +298,7 @@ public:
    * @param farthest: The farthest distance to detect,  unit: cm
    * @return true: Set detection range succeeded, false: Set detection range failed.
   */
-  bool setDetectRange(uint16_t closest,uint16_t farthest); 
+  bool setDetectRange(uint16_t closest, uint16_t farthest);
 
   /**
    * @fn enableDistanceDoor
@@ -309,7 +309,7 @@ public:
    * @param doorData: An array of type uint8 t is needed, with parameters 0 and 1 representing disabling and enabling respectively
    * @return true: Enable door succeeded, false: Enable door failed.
   */
-  bool enableDistanceDoor(eDistanceDoorType_t doorType, uint8_t *doorData); 
+  bool enableDistanceDoor(eDistanceDoorType_t doorType, uint8_t *doorData);
 
   /**
    * @fn factoryReset
@@ -351,7 +351,7 @@ public:
    * @param threshold : An array of type uint8 t is needed, with parameters 0-99 representing the threshold value of the distance door
    * @return true: Set distance door threshold succeeded, false: Set distance door threshold failed.
   */
-  bool setDistanceDoorThreshold(eDistanceDoorType_t doorType,uint8_t * threshold);
+  bool setDistanceDoorThreshold(eDistanceDoorType_t doorType, uint8_t *threshold);
 
   /**
    * @fn setBaudrate
@@ -402,7 +402,7 @@ public:
    * @n        energy  : The energy of the detected target, range:0-99.
   */
   sExistTarget_t getExistTargetInfo(void);
-  
+
   /**
    * @fn getMoveTargetInfo
    * @brief Get the information of the detected target
@@ -439,18 +439,17 @@ public:
   eTargetState_t getOutTargetState(void);
 
 protected:
-
   int8_t restart(void);
-  bool setLed(eLedMode_t runLed,eLedMode_t outLed);
-  bool getOutMode(void);
-  bool getResolutionMode(void);
+  bool   setLed(eLedMode_t runLed, eLedMode_t outLed);
+  bool   getOutMode(void);
+  bool   getResolutionMode(void);
 
-  void sendPack(void *pdata,uint16_t len,uint8_t msgType);
+  void        sendPack(void *pdata, uint16_t len, uint8_t msgType);
   sRecvPack_t recvPack();
-  bool checkSum(uint8_t *pdata,uint8_t len);
-  uint16_t getCheckSum(uint8_t *pdata,uint16_t len);
-  void writeReg (uint8_t reg, void *pdata,uint8_t len);
-  int16_t readReg(uint8_t reg,void *pdata,uint8_t len);
+  bool        checkSum(uint8_t *pdata, uint8_t len);
+  uint16_t    getCheckSum(uint8_t *pdata, uint16_t len);
+  void        writeReg(uint8_t reg, void *pdata, uint8_t len);
+  int16_t     readReg(uint8_t reg, void *pdata, uint8_t len);
 
 private:
 #if defined(ESP8266) || defined(ARDUINO_AVR_UNO)
@@ -464,9 +463,9 @@ private:
   uint8_t  _txpin;
   uint8_t  _outpin;
 
-  sDetectResult_t _detectResult;
+  sDetectResult_t   _detectResult;
   eResolutionMode_t _resolutionMode = eResolution80Cm;
-  eOutMode_t _outMode;
+  eOutMode_t        _outMode;
 };
 
 #endif

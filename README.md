@@ -69,7 +69,7 @@ There are two methods for using this library：
    * @return true: Output LED succeeded, false: Output LED failed.
   */
   bool setOutLed(eLedMode_t switching);
-  
+
   /**
    * @fn setOutMode
    * @brief Set the output mode
@@ -97,7 +97,7 @@ There are two methods for using this library：
    * @param farthest: The farthest distance to detect,  unit: cm
    * @return true: Set detection range succeeded, false: Set detection range failed.
   */
-  bool setDetectRange(uint16_t closest,uint16_t farthest); 
+  bool setDetectRange(uint16_t closest,uint16_t farthest);
 
   /**
    * @fn enableDistanceDoor
@@ -108,7 +108,7 @@ There are two methods for using this library：
    * @param doorData: An array of type uint8 t is needed, with parameters 0 and 1 representing disabling and enabling respectively
    * @return true: Enable door succeeded, false: Enable door failed.
   */
-  bool enableDistanceDoor(eDistanceDoorType_t doorType, uint8_t *doorData); 
+  bool enableDistanceDoor(eDistanceDoorType_t doorType, uint8_t *doorData);
 
   /**
    * @fn factoryReset
@@ -201,7 +201,7 @@ There are two methods for using this library：
    * @n        energy  : The energy of the detected target, range:0-99.
   */
   sExistTarget_t getExistTargetInfo(void);
-  
+
   /**
    * @fn getMoveTargetInfo
    * @brief Get the information of the detected target
