@@ -84,6 +84,9 @@ jobs:
           cache-key: ${{ needs.common.outputs.cache-key }}
 
       - name: Run pylint
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           . venv/bin/activate
 
@@ -96,13 +99,7 @@ jobs:
           fi
 
           pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES ## || true  ##运行 pylint 检查代码规范
-        if: always()
-        
-      - name: Force neutral via API
-        if: always()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
+
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -118,11 +115,13 @@ jobs:
                 \"summary\": \"Some warnings detected.\"
               }
             }"
+          if: always()
+          
 
       - name: Show neutral status
 
         run: |
-       
+          echo "ok"
 
         if: always()
 
