@@ -204,7 +204,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -X POST https://api.github.com/repos/$GITHUB_REPOSITORY/check-runs \
-            --data-binary @- >/dev/null 2>&1 <<EOF
+            --data-binary @- <<EOF
           {
             "name": "Clang-Tidy Check",
             "head_sha": "$GITHUB_SHA",
@@ -214,15 +214,11 @@ jobs:
             "details_url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID",
             "output": {
               "title": "Clang-Tidy 检查结果",
-              "summary": "⚠️ clang-tidy 检查发现警告或错误，请查看 Actions 日志。",
-              "text": "### 详细说明\n$OUTPUT"
+              "summary": "Errors: $ERRORS, Warnings: $WARNINGS",
+              "text": "详细输出过长，请查看 Actions 日志。"
             }
           }
           EOF
-          else
-            echo "✅ clang-tidy passed."
-            exit 0
-          fi
           
         if: always()
 
