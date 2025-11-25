@@ -103,21 +103,21 @@ jobs:
 
           pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES ## || true  ##运行 pylint 检查代码规范
 
-          curl -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
-            https://api.github.com/repos/$GITHUB_REPOSITORY/check-runs \
-            -d "{
-              \"name\": \"Pylint Check\",
-              \"head_sha\": \"$GITHUB_SHA\",
-              \"status\": \"completed\",
-              \"conclusion\": \"neutral\",
-              \"completed_at\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
-              \"output\": {
-                \"title\": \"Pylint Result\",
-                \"summary\": \"Some warnings detected.\"
-              }
-            }"
+          # curl -X POST \
+          #   -H "Accept: application/vnd.github+json" \
+          #   -H "Authorization: Bearer $GITHUB_TOKEN" \
+          #   https://api.github.com/repos/$GITHUB_REPOSITORY/check-runs \
+          #   -d "{
+          #     \"name\": \"Pylint Check\",
+          #     \"head_sha\": \"$GITHUB_SHA\",
+          #     \"status\": \"completed\",
+          #     \"conclusion\": \"neutral\",
+          #     \"completed_at\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+          #     \"output\": {
+          #       \"title\": \"Pylint Result\",
+          #       \"summary\": \"Some warnings detected.\"
+          #     }
+          #   }"
           
 
       - name: Show neutral status
