@@ -146,6 +146,9 @@ jobs:
       || github.event_name == 'pull_request'
       || github.event_name == 'repository_dispatch'
 
+    permissions:
+      checks: write        
+      contents: read 
     name: check clang-tidy and build
     runs-on: ubuntu-24.04
     env:
