@@ -134,7 +134,7 @@ class DFRobot_C4002(object):
     if self.ser.isOpen() == False:
       self.ser.open()
 
-  def begi n(self, outpin=255):
+  def begin(self, outpin=255):
     '''!
     @brief begin
     param outpin: output pin, default is 255, which means no output pin is used.
