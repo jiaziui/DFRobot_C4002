@@ -201,9 +201,9 @@ jobs:
           else
             echo "✅ clang-tidy passed."
             exit 0
+          fi
           
         if: always()
-
 
   release:
       name: Check tag version
