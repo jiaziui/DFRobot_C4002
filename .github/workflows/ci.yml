@@ -101,13 +101,14 @@ jobs:
 
           set +e          # 关闭自动退出
 
-          pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES  PYLINT_EXIT=$?
-
+          pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES
+          PYLINT_EXIT=$?
           echo "Pylint exit code: $PYLINT_EXIT"
-          if [ $PYLINT_EXIT == 0 ]; then
+
+          if [ $PYLINT_EXIT -eq 0 ]; then
             echo "✅ Pylint passed"
             exit 0
-          elif [ $PYLINT_EXIT == 20 ]; then
+          elif [ $PYLINT_EXIT -eq 20 ]; then
             echo "⚠️ Pylint found errors or warnings"
             curl -X POST \
               -H "Accept: application/vnd.github+json" \
