@@ -211,15 +211,14 @@ jobs:
             "status": "completed",
             "conclusion": "neutral",
             "completed_at": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+            "details_url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID",
             "output": {
               "title": "Clang-Tidy 检查结果",
-              "summary": "⚠️ clang-tidy 检查发现警告，请查看 Actions 日志。",
+              "summary": "⚠️ clang-tidy 检查发现警告或错误，请查看 Actions 日志。",
               "text": "### 详细说明\n$OUTPUT"
-            },
-            "details_url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            }
           }
           EOF
-            exit 0
           else
             echo "✅ clang-tidy passed."
             exit 0
