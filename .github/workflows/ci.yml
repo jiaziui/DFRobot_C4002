@@ -94,17 +94,18 @@ jobs:
           pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES || true  ##运行 pylint 检查代码规范
         if: always()
         
-      - name: Suggested changes
-        shell: bash {0}  
+      - name: Show neutral status
+        shell: bash {0}    # 去掉 -e，避免非零退出被当作失败
         run: |
-          # if git diff --quiet; then
-          #   echo "No changes suggested by pylint."
-          # else
-          #   echo "Changes suggested by pylint:"
-          #   git --no-pager diff
-          #   exit 1
-          # fi
+          # 🔹 关闭自动失败
+          set +e
+
+          # 🔹 输出日志/警告
+          echo "::warning::This step is neutral and does not fail the workflow."
+
+          # 🔹 退出码 78 → Job/Check Run 显示 neutral
           exit 78
+
         if: always()
 
   clang-tidy:
