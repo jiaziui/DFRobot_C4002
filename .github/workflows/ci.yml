@@ -98,9 +98,7 @@ jobs:
             echo "No Python files found. Skipping pylint."
             exit 0
           fi
-
-          set +e          # 关闭自动退出
-
+          set +e
           pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES
           PYLINT_EXIT=$?
           echo "Pylint exit code: $PYLINT_EXIT"
@@ -110,25 +108,22 @@ jobs:
             exit 0
           elif [ $PYLINT_EXIT -eq 20 ]; then
             echo "⚠️ Pylint found errors or warnings"
-            curl --silent --show-error --location \
+            curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -X POST https://api.github.com/repos/$GITHUB_REPOSITORY/check-runs \
-            --data-binary @- >/dev/null 2>&1 <<EOF
-          {
-            "name": "Pylint Check",
-            "head_sha": "$GITHUB_SHA",
-            "status": "completed",
-            "conclusion": "neutral",
-            "details_url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID",
-            "completed_at": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
-            "output": {
-              "title": "Pylint 检查结果",
-              "summary": "⚠️ 存在警告，请查看 Actions run pylint 运行日志。"
-            }
-          }
-          EOF
-            
+            https://api.github.com/repos/$GITHUB_REPOSITORY/check-runs \
+            -d "{
+              \"name\": \"Pylint Check\",
+              \"head_sha\": \"$GITHUB_SHA\",
+              \"status\": \"completed\",
+              \"conclusion\": \"neutral\",
+              \"completed_at\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+              \"output\": {
+                \"title\": \"Pylint 检查警告\",
+                \"summary\": \"⚠️ 存在警告，请点击 pylint ---->>> Run pylint 日志。\",
+                \"text\": \"### 说明\n本次构建存在 Pylint 警告，详细输出已在 Actions 日志中展示。\"
+              }
+            }"
             else
               echo "❌ Pylint failed"
               exit $PYLINT_EXIT
