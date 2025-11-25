@@ -148,6 +148,9 @@ jobs:
 
     name: check clang-tidy and build
     runs-on: ubuntu-24.04
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
     needs:
       - common
     steps:
