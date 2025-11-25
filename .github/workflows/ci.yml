@@ -120,7 +120,7 @@ jobs:
               \"completed_at\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
               \"output\": {
                 \"title\": \"Pylint 检查警告\",
-                \"summary\": \"⚠️ 存在警告，请点击 pylint ---->>> Run pylint 日志。\",
+                \"summary\": \"⚠️ 存在警告，请点击左侧导航栏 [pylint] ---->>> [Run pylint] 查看警告日志。\",
                 \"text\": \"### 说明\n本次构建存在 Pylint 警告，详细输出已在 Actions 日志中展示。\"
               }
             }"
