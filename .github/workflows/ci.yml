@@ -95,7 +95,7 @@ jobs:
             exit 0
           fi
 
-          pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES || true  ##运行 pylint 检查代码规范
+          pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES ## || true  ##运行 pylint 检查代码规范
         if: always()
         
       - name: Force neutral via API
