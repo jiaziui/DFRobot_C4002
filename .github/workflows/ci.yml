@@ -66,13 +66,17 @@ jobs:
       || github.event_name == 'repository_dispatch'
 
     runs-on: ubuntu-24.04
+    permissions:
+      checks: write        
+      contents: read 
+
     continue-on-error: true
     needs:
       - common                      ## 依赖 common job，确保环境变量已设置
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@v5.0.0           ##检查代码
-
+    
       - name: Restore Python 3                ## 还原 Python 3 环境
         uses: ./.github/actions
         with:
