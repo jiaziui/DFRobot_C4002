@@ -84,6 +84,7 @@ jobs:
           cache-key: ${{ needs.common.outputs.cache-key }}
 
       - name: Run pylint
+        if: always()
         shell: bash {0}   # 去掉默认的 -e
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -97,7 +98,7 @@ jobs:
             echo "No Python files found. Skipping pylint."
             exit 0
           fi
-          
+
           set +e          # 关闭自动退出
 
           pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES ## || true  ##运行 pylint 检查代码规范
@@ -117,7 +118,6 @@ jobs:
                 \"summary\": \"Some warnings detected.\"
               }
             }"
-          if: always()
           
 
       - name: Show neutral status
