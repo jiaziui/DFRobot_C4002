@@ -129,12 +129,12 @@ class DFRobot_C4002(object):
   _detect_result = DetectResultStruct()
   _outpin = 255
 
-  def __init __(self, baud):
+  def __init__(self, baud):
     self.ser = serial.Serial('/dev/ttyAMA0', baudrate=baud, bytesize=8, parity="N", stopbits=1, timeout=0.5)
     if self.ser.isOpen() == False:
       self.ser.open()
 
-  def begi n(self, outpin=255):
+  def begin(self, outpin=255):
     '''!
     @brief begin
     param outpin: output pin, default is 255, which means no output pin is used.
@@ -155,7 +155,7 @@ class DFRobot_C4002(object):
     ret = self.get_resolution_mode()
     return ret
 
-  def set_run_ led(self, run_led):
+  def set_run_led(self, run_led):
     '''!
     @brief set run led
     @param switching LED_OFF:off LED_ON:on LED_KEEP:keep
