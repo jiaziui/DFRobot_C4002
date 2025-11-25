@@ -1,0 +1,236 @@
+---
+name: Arduino Library CI
+
+on: 
+  push:
+    branches:
+      - "**"       # 普通分支推送时运行代码检查
+    tags:
+      - "v*.*.*"   # 小写 v 触发
+      - "V*.*.*"   # 大写 V 触发
+  pull_request:
+  repository_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_3: "3.11.13"
+  REQUIREMENTS_PATH: './.github/config/requirements.txt' ## 依赖文件路径
+
+jobs:
+  common:                                       ## 这个job必须放在最前面，因为它会设置一些环境变量供后续job使用
+    name: Create common environment
+    runs-on: ubuntu-24.04
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }} ## 输出缓存 key，供后续 job 使用
+    steps:
+      - name: Check out code from GitHub        ## 拉取代码到虚拟机
+        uses: actions/checkout@v5.0.0
+
+      - name: Generate cache-key                ## 根据依赖文件生成缓存 key
+        id: cache-key
+        run: |
+          echo key="${{ hashFiles(env.REQUIREMENTS_PATH, '.pre-commit-config.yaml') }}" >> $GITHUB_OUTPUT
+
+      - name: set up Python ${{ env.PYTHON_3 }} ## 设置 Python 3 环境
+        id: python3
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: ${{ env.PYTHON_3 }}
+
+      - name: Cache venv                        ## 缓存虚拟环境
+        id: cache-venv
+        uses: actions/cache@v4.2.4
+        with:
+          path: venv                            ## 缓存路径
+          key: ${{ runner.os }}-${{ env.PYTHON_3 }}-venv-${{ steps.cache-key.outputs.key }}
+
+      - name: Create Python virtual environment ## 创建 Python 虚拟环境
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install -r ${{ env.REQUIREMENTS_PATH }}
+
+      - name: Save venv to cache
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        uses: actions/cache@v4.2.4
+        with:
+          path: venv
+          key: ${{ runner.os }}-${{ env.PYTHON_3 }}-venv-${{ steps.cache-key.outputs.key }}
+
+  pylint:
+    if: >
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/'))
+      || github.event_name == 'pull_request'
+      || github.event_name == 'repository_dispatch'
+
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    needs:
+      - common                      ## 依赖 common job，确保环境变量已设置
+    steps:
+      - name: Check out code from GitHub
+        uses: actions/checkout@v5.0.0           ##检查代码
+
+      - name: Restore Python 3                ## 还原 Python 3 环境
+        uses: ./.github/actions
+        with:
+          python-version: ${{ env.PYTHON_3 }}
+          cache-key: ${{ needs.common.outputs.cache-key }}
+
+      - name: Run pylint
+        run: |
+          . venv/bin/activate
+          FILES=$(find . -type f -name "*.py" -not -path "*/.venv/*")
+          if [ -z "$FILES" ]; then
+            echo "No Python files found."
+            exit 0
+          fi
+
+          pylint -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES
+          EXIT_CODE=$?
+
+          if [ "$EXIT_CODE" -ne 0 ]; then
+            echo "::warning::Pylint issues detected."
+            exit 78     # ★ neutral 图标
+          fi
+
+          exit 0
+        if: always()
+
+      - name: Suggested changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes suggested by pylint."
+          else
+            echo "Changes suggested by pylint:"
+            git --no-pager diff
+            exit 1
+          fi
+        if: always()
+
+  clang-tidy:
+    if: >
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/'))
+      || github.event_name == 'pull_request'
+      || github.event_name == 'repository_dispatch'
+
+    name: check clang-tidy and build
+    runs-on: ubuntu-24.04
+    needs:
+      - common
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5.0.0
+
+      - name: Restore Python 3
+        uses: ./.github/actions
+        with:
+          python-version: ${{ env.PYTHON_3 }}
+          cache-key: ${{ needs.common.outputs.cache-key }}
+        
+
+      - name: Install PlatformIO
+        run: | 
+          pip install platformio
+          cp ./.github/config/platformio.ini .
+
+      - name: Generate compile_commands.json
+        run: pio run -t compiledb
+
+      - name: Run clang-tidy
+        run: |
+          FILES=$(find . \
+          -path './.git'    -prune -o \
+          -path './.github' -prune -o \
+          -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.ino' \) -print)
+          
+          echo "Running clang-tidy on $FILES"
+          if [ -z "$FILES" ]; then             # 检查是否有文件
+              echo "No source files found."
+              exit 0
+          fi
+          clang-tidy $FILES -p . \
+          -header-filter="$filter" \
+          -config-file=./.github/config/.clang-tidy \
+          || false
+        if: always()
+
+
+  release:
+      name: Check tag version
+      if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/V')
+      runs-on: ubuntu-24.04
+      permissions:
+        contents: write
+      needs: common
+      concurrency:
+        group: release-${{ github.ref }}
+        cancel-in-progress: true
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v5.0.0
+          with:
+            fetch-depth: 0
+
+        - name: Verify library.properties version
+          id: verify
+          run: |
+            RAW_TAG="${GITHUB_REF#refs/tags/}"      # 例如 v1.0.1 或 V1.0.1
+            TAG_VERSION="${RAW_TAG#[vV]}"           # 去掉前导 v 或 V -> 1.0.1
+
+            # 读取并清理文件里的 version= 值
+            if [ ! -f library.properties ]; then
+              echo "❌ library.properties not found"
+              exit 1
+            fi
+            FILE_VERSION="$(awk -F= '/^[[:space:]]*version[[:space:]]*=/ {print $2; exit}' library.properties \
+              | tr -d '\r' | xargs)"
+            echo "📦 Tag version: $TAG_VERSION"
+            echo "🧾 File version: $FILE_VERSION"
+
+            if [ "$TAG_VERSION" != "$FILE_VERSION" ]; then
+              echo "❌ Version mismatch!"
+              echo "library.properties version ($FILE_VERSION) does not match tag ($TAG_VERSION)"
+              exit 1
+            fi
+
+            echo "✅ Version match confirmed: $TAG_VERSION"
+            echo "tag_version=$TAG_VERSION" >> $GITHUB_OUTPUT
+
+        # - name: Create release zip
+        #   id: zip
+        #   run: |
+        #     ZIP_NAME="${{ github.event.repository.name }}_${{ steps.verify.outputs.tag_version }}.zip"
+        #     echo "Creating $ZIP_NAME"
+        #     zip -r "$ZIP_NAME" . \
+        #       -x '*.git*' '.github/*' '__pycache__/*' # 排除不必要的文件 .github  、.git  、__pycache__
+        #     echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
+
+        # - name: Upload GitHub Release
+        #   uses: softprops/action-gh-release@v2
+        #   with:
+        #     files: ${{ steps.zip.outputs.zip_name }}
+        #     generate_release_notes: true
+        #   env:
+        #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  ci-status:
+    runs-on: ubuntu-24.04
+    needs:
+      - common
+      - pylint
+      - clang-tidy
+      - release
+    if: always()
+    steps:
+      - name: Print job results
+        run: |
+          echo "==== CI Summary ===="
+          echo "common:     ${{ needs.common.result }}"
+          echo "pylint:     ${{ needs.pylint.result }}"
+          echo "clang-tidy: ${{ needs['clang-tidy'].result }}"
+          echo "release:    ${{ needs.release.result }}"
+          echo "===================="
+
