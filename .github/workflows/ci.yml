@@ -197,7 +197,7 @@ jobs:
             exit 1
           elif echo "$OUTPUT" | grep -q "warning:"; then
             echo "⚠️ clang-tidy found warnings."
-            exit 0
+            exit 1
           else
             echo "✅ clang-tidy passed."
             exit 0
