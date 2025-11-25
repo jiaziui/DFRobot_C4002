@@ -95,8 +95,8 @@ jobs:
         if: always()
         
       - name: Suggested changes
+        shell: bash {0}  
         run: |
-          shell: bash {0} 
           # if git diff --quiet; then
           #   echo "No changes suggested by pylint."
           # else
