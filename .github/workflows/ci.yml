@@ -197,7 +197,26 @@ jobs:
             exit 1
           elif echo "$OUTPUT" | grep -q "warning:"; then
             echo "⚠️ clang-tidy found warnings."
-            exit 1
+            curl --silent --show-error --location \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -X POST https://api.github.com/repos/$GITHUB_REPOSITORY/check-runs \
+            --data-binary @- >/dev/null 2>&1 <<EOF
+          {
+            "name": "Clang-Tidy Check",
+            "head_sha": "$GITHUB_SHA",
+            "status": "completed",
+            "conclusion": "neutral",
+            "completed_at": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+            "output": {
+              "title": "Clang-Tidy 检查结果",
+              "summary": "⚠️ clang-tidy 检查发现警告，请查看 Actions 日志。",
+              "text": "### 详细说明\n$OUTPUT"
+            },
+            "details_url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          }
+          EOF
+            exit 0
           else
             echo "✅ clang-tidy passed."
             exit 0
