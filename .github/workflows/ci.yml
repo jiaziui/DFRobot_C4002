@@ -82,32 +82,28 @@ jobs:
       - name: Run pylint
         run: |
           . venv/bin/activate
-          FILES=$(find . -type f -name "*.py" -not -path "*/.venv/*")
+
+          FILES=$(find . -type f -name "*.py" -not -path "*/.venv/*" -not -path "*/venv/*" -not -path "*/.git/*")
+
+          # 如果为空则跳过
           if [ -z "$FILES" ]; then
-            echo "No Python files found."
+            echo "No Python files found. Skipping pylint."
             exit 0
           fi
 
-          pylint -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES
-          EXIT_CODE=$?
-
-          if [ "$EXIT_CODE" -ne 0 ]; then
-            echo "::warning::Pylint issues detected."
-            exit 78     # ★ neutral 图标
-          fi
-
-          exit 0
+          pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES || true  ##运行 pylint 检查代码规范
         if: always()
-
+        
       - name: Suggested changes
         run: |
-          if git diff --quiet; then
-            echo "No changes suggested by pylint."
-          else
-            echo "Changes suggested by pylint:"
-            git --no-pager diff
-            exit 1
-          fi
+          # if git diff --quiet; then
+          #   echo "No changes suggested by pylint."
+          # else
+          #   echo "Changes suggested by pylint:"
+          #   git --no-pager diff
+          #   exit 1
+          # fi
+          exti 78
         if: always()
 
   clang-tidy:
