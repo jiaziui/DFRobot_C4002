@@ -200,6 +200,9 @@ jobs:
             exit 1
           elif echo "$OUTPUT" | grep -q "warning:"; then
             echo "⚠️ clang-tidy found warnings."
+            SUMMARY="Errors: $ERRORS, Warnings: $WARNINGS"
+            TEXT="详细输出过长，请查看 Actions 日志。"
+
             curl --silent --show-error --location \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -214,11 +217,15 @@ jobs:
             "details_url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID",
             "output": {
               "title": "Clang-Tidy 检查结果",
-              "summary": "Errors: $ERRORS, Warnings: $WARNINGS",
-              "text": "详细输出过长，请查看 Actions 日志。"
+              "summary": "$SUMMARY",
+              "text": "$TEXT"
             }
           }
           EOF
+          else
+            echo "✅ clang-tidy passed"
+            exit 0
+          fi
           
         if: always()
 
