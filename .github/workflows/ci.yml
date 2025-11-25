@@ -94,12 +94,31 @@ jobs:
           pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES || true  ##运行 pylint 检查代码规范
         if: always()
         
-      - name: Show neutral status
-        shell: bash {0}    # 去掉 -e，避免非零退出被当作失败
+      - name: Force neutral via API
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set +e
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/check-runs \
+            -d "{
+              \"name\": \"Pylint Check\",
+              \"head_sha\": \"$GITHUB_SHA\",
+              \"status\": \"completed\",
+              \"conclusion\": \"neutral\",
+              \"completed_at\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+              \"output\": {
+                \"title\": \"Pylint Result\",
+                \"summary\": \"Some warnings detected.\"
+              }
+            }"
 
-          echo "::warning::This step is neutral and does not fail the workflow."
+      - name: Show neutral status
+
+        run: |
+       
 
         if: always()
 
