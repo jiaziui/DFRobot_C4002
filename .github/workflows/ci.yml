@@ -97,14 +97,9 @@ jobs:
       - name: Show neutral status
         shell: bash {0}    # 去掉 -e，避免非零退出被当作失败
         run: |
-          # 🔹 关闭自动失败
           set +e
 
-          # 🔹 输出日志/警告
           echo "::warning::This step is neutral and does not fail the workflow."
-
-          # 🔹 退出码 78 → Job/Check Run 显示 neutral
-          exit 78
 
         if: always()
 
