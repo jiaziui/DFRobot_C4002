@@ -93,13 +93,13 @@ jobs:
 
           FILES=$(find . -type f -name "*.py" -not -path "*/.venv/*" -not -path "*/venv/*" -not -path "*/.git/*")
 
-          # 如果为空则跳过
           if [ -z "$FILES" ]; then
             echo "No Python files found. Skipping pylint."
             exit 0
           fi
           set +e
           pylint  -f parseable --rcfile=./.github/config/.pylintrc --persistent=n $FILES
+
           PYLINT_EXIT=$?
           echo "Pylint exit code: $PYLINT_EXIT"
 
@@ -120,7 +120,7 @@ jobs:
             "conclusion": "neutral",
             "completed_at": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
             "output": {
-              "title": "Pylint 检查警告",
+              "title": "Pylint check warnings",
               "summary": "⚠️ 存在警告，请点击左侧导航栏 [pylint] ---->>> [Run pylint] 查看警告日志。",
               "text": "### 说明\n本次构建存在 Pylint 警告，详细输出已在 Actions 日志中展示。"
             }
@@ -131,6 +131,7 @@ jobs:
               echo "❌ Pylint failed"
               exit $PYLINT_EXIT
             fi
+
 
       - name: Show neutral status
 
@@ -175,15 +176,32 @@ jobs:
           -path './.github' -prune -o \
           -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.ino' \) -print)
           
-          echo "Running clang-tidy on $FILES"
+          
+
+          echo "Running clang-tidy on $FILES" 
           if [ -z "$FILES" ]; then             # 检查是否有文件
               echo "No source files found."
               exit 0
           fi
-          clang-tidy $FILES -p . \
+
+          OUTPUT=$(clang-tidy $FILES -p . \
           -header-filter="$filter" \
           -config-file=./.github/config/.clang-tidy \
-          || false
+          2>&1 || true)
+
+          echo "$OUTPUT"
+
+          # 检查是否有 error
+          if echo "❌ $OUTPUT" | grep -q "error:"; then
+            echo "::error::clang-tidy found errors."
+            exit 1
+          elif echo "$OUTPUT" | grep -q "warning:"; then
+            echo "⚠️ clang-tidy found warnings."
+            exit 0
+          else
+            echo "✅ clang-tidy passed."
+            exit 0
+          
         if: always()
 
 
