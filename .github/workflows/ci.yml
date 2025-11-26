@@ -171,6 +171,11 @@ jobs:
         run: | 
           pip install platformio
           cp ./.github/config/platformio.ini .
+        
+      - name: Install Project Libraries
+        run: | 
+          
+          pio lib install
 
       - name: Generate compile_commands.json
         run: pio run -t compiledb
@@ -180,10 +185,9 @@ jobs:
           FILES=$(find . \
           -path './.git'    -prune -o \
           -path './.github' -prune -o \
+          -path './.pio'   -prune -o \
           -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.ino' \) -print)
           
-          
-
           echo "Running clang-tidy on $FILES" 
           if [ -z "$FILES" ]; then             # 检查是否有文件
               echo "No source files found."
