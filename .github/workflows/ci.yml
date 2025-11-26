@@ -70,7 +70,7 @@ jobs:
       checks: write        
       contents: read 
 
-    continue-on-error: true
+    # continue-on-error: true
     needs:
       - common                      ## 依赖 common job，确保环境变量已设置
     steps:
