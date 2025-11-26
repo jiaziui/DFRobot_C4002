@@ -129,7 +129,7 @@ class DFRobot_C4002(object):
   _detect_result = DetectResultStruct()
   _outpin = 255
 
-  def __init __(self, baud):
+  def __init__(self, baud):
     self.ser = serial.Serial('/dev/ttyAMA0', baudrate=baud, bytesize=8, parity="N", stopbits=1, timeout=0.5)
     if self.ser.isOpen() == False:
       self.ser.open()

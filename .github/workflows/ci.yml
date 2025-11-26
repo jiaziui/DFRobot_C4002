@@ -225,10 +225,10 @@ jobs:
             }
           }
           EOF
-          else
-            echo "✅ clang-tidy passed"
-            exit 0
-          fi
+            else
+              echo "✅ clang-tidy passed"
+              exit 0
+            fi
           
         if: always()
 
