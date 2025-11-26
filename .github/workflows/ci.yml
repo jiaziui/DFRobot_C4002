@@ -210,7 +210,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -X POST https://api.github.com/repos/$GITHUB_REPOSITORY/check-runs \
-            --data-binary @- <<EOF
+            --data-binary @- >/dev/null 2>&1 <<EOF
           {
             "name": "Clang-Tidy Check",
             "head_sha": "$GITHUB_SHA",
